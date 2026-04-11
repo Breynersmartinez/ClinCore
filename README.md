@@ -543,3 +543,4 @@ Verificacion manual recomendada:
 - Mantener sincronizados los permisos configurados en base de datos, backend y frontend.
 - La eliminacion funcional se maneja mediante inactivacion de registros cuando el modulo lo soporta.
 
+
