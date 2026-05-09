@@ -1,14 +1,14 @@
--- ============================================================
+
 -- SCRIPT 04: DATOS INICIALES (SEED DATA)
 -- Sistema de Gestión de Citas Médicas
 -- Oracle XE 18c - Esquema: APP_CITAS
--- ============================================================
--- Ejecutar como: app_citas
--- ============================================================
 
--- ============================================================
+-- Ejecutar como: app_citas
+
+
+
 -- DEPARTAMENTOS (10 registros)
--- ============================================================
+
 INSERT INTO departamentos (codigo_dane, nombre_departamento)
 VALUES ('05', 'ANTIOQUIA');
 
@@ -39,9 +39,9 @@ VALUES ('76', 'VALLE DEL CAUCA');
 INSERT INTO departamentos (codigo_dane, nombre_departamento)
 VALUES ('73', 'TOLIMA');
 
--- ============================================================
+
 -- MUNICIPIOS (10 registros)
--- ============================================================
+
 INSERT INTO municipios (codigo_dane, nombre_municipio, id_departamento)
 VALUES ('05001', 'MEDELLÍN', 1);
 
@@ -72,9 +72,9 @@ VALUES ('73001', 'IBAGUÉ', 10);
 INSERT INTO municipios (codigo_dane, nombre_municipio, id_departamento)
 VALUES ('05002', 'ABEJORRAL', 1);
 
--- ============================================================
+
 -- SEDES (6 registros)
--- ============================================================
+
 INSERT INTO sedes (codigo_sede, nombre_sede, direccion, telefono, email, id_municipio)
 VALUES ('SED001', 'SEDE PRINCIPAL BOGOTÁ', 'Cra. 15 # 90-12', '6014568900', 'sede.bogota@clinica.com', 2);
 
@@ -93,9 +93,9 @@ VALUES ('SED005', 'SEDE BUCARAMANGA', 'Cll. 45 # 27-60 Cabecera', '6077891100', 
 INSERT INTO sedes (codigo_sede, nombre_sede, direccion, telefono, email, id_municipio)
 VALUES ('SED006', 'SEDE IBAGUÉ CENTRO', 'Cra. 4 # 13-30 Centro', '6082345600', 'sede.ibague@clinica.com', 9);
 
--- ============================================================
+
 -- CONSULTORIOS (8 registros)
--- ============================================================
+
 INSERT INTO consultorios (codigo_consultorio, nombre_consultorio, numero_piso, capacidad, id_sede)
 VALUES ('CON001', 'CONSULTORIO MEDICINA GENERAL 101', 1, 1, 1);
 
@@ -120,9 +120,9 @@ VALUES ('CON007', 'CONSULTORIO DERMATOLOGÍA 103', 1, 1, 4);
 INSERT INTO consultorios (codigo_consultorio, nombre_consultorio, numero_piso, capacidad, id_sede)
 VALUES ('CON008', 'SALA DE PROCEDIMIENTOS 401', 4, 3, 5);
 
--- ============================================================
+
 -- ESPECIALIDADES
--- ============================================================
+
 INSERT INTO especialidades (codigo_especialidad, nombre_especialidad)
 VALUES ('MG', 'MEDICINA GENERAL');
 INSERT INTO especialidades (codigo_especialidad, nombre_especialidad)
@@ -136,9 +136,9 @@ VALUES ('ORT', 'ORTOPEDIA');
 
 COMMIT;
 
--- ============================================================
+
 -- VERIFICACIÓN DE DATOS INSERTADOS
--- ============================================================
+
 SELECT 'DEPARTAMENTOS' tabla, COUNT(*) registros FROM departamentos
 UNION ALL
 SELECT 'MUNICIPIOS', COUNT(*) FROM municipios

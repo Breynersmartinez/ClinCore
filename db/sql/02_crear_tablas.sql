@@ -1,16 +1,16 @@
--- ============================================================
+
 -- SCRIPT 02: CREACIÓN DE TABLAS DEL SISTEMA
 -- Sistema de Gestión de Citas Médicas
 -- Oracle XE 18c - Esquema: APP_CITAS
--- ============================================================
+
 -- Ejecutar conectado como: app_citas
 -- Conexión: sqlplus app_citas/Citas2024#@localhost:1521/XEPDB1
--- ============================================================
 
--- ============================================================
+
+
 -- TABLA 1: DEPARTAMENTOS
 -- Almacena los departamentos del país (Colombia)
--- ============================================================
+
 CREATE TABLE departamentos (
     id_departamento     NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -31,10 +31,10 @@ COMMENT ON TABLE departamentos IS 'Tabla maestra de departamentos del país';
 COMMENT ON COLUMN departamentos.codigo_dane IS 'Código DANE del departamento (2 dígitos)';
 COMMENT ON COLUMN departamentos.activo IS 'S=Activo, N=Inactivo';
 
--- ============================================================
+
 -- TABLA 2: MUNICIPIOS
 -- Almacena los municipios asociados a cada departamento
--- ============================================================
+
 CREATE TABLE municipios (
     id_municipio        NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -56,10 +56,10 @@ TABLESPACE tbs_citas_medicas;
 COMMENT ON TABLE municipios IS 'Tabla maestra de municipios del país';
 COMMENT ON COLUMN municipios.codigo_dane IS 'Código DANE del municipio (5 dígitos)';
 
--- ============================================================
+
 -- TABLA 3: SEDES
 -- Sedes o instalaciones de la institución médica
--- ============================================================
+
 CREATE TABLE sedes (
     id_sede             NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -83,10 +83,10 @@ TABLESPACE tbs_citas_medicas;
 
 COMMENT ON TABLE sedes IS 'Sedes o puntos de atención de la institución médica';
 
--- ============================================================
+
 -- TABLA 4: CONSULTORIOS
 -- Consultorios disponibles en cada sede
--- ============================================================
+
 CREATE TABLE consultorios (
     id_consultorio      NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -110,9 +110,9 @@ TABLESPACE tbs_citas_medicas;
 COMMENT ON TABLE consultorios IS 'Consultorios disponibles en cada sede';
 COMMENT ON COLUMN consultorios.capacidad IS 'Capacidad máxima de pacientes simultáneos';
 
--- ============================================================
+
 -- TABLA 5: ESPECIALIDADES MÉDICAS (Tabla auxiliar)
--- ============================================================
+
 CREATE TABLE especialidades (
     id_especialidad     NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -126,9 +126,9 @@ CREATE TABLE especialidades (
 )
 TABLESPACE tbs_citas_medicas;
 
--- ============================================================
+
 -- TABLA 6: PERSONAS (Base para médicos y pacientes)
--- ============================================================
+
 CREATE TABLE personas (
     id_persona          NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -157,9 +157,9 @@ CREATE TABLE personas (
 )
 TABLESPACE tbs_citas_medicas;
 
--- ============================================================
+
 -- TABLA 7: MEDICOS
--- ============================================================
+
 CREATE TABLE medicos (
     id_medico           NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -180,9 +180,9 @@ CREATE TABLE medicos (
 )
 TABLESPACE tbs_citas_medicas;
 
--- ============================================================
+
 -- TABLA 8: PACIENTES
--- ============================================================
+
 CREATE TABLE pacientes (
     id_paciente         NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -203,9 +203,9 @@ CREATE TABLE pacientes (
 )
 TABLESPACE tbs_citas_medicas;
 
--- ============================================================
+
 -- TABLA 9: CITAS MÉDICAS
--- ============================================================
+
 CREATE TABLE citas_medicas (
     id_cita             NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -237,9 +237,9 @@ CREATE TABLE citas_medicas (
 )
 TABLESPACE tbs_citas_medicas;
 
--- ============================================================
+
 -- TABLA 10: AUDITORIA (Registro de cambios por rol)
--- ============================================================
+
 CREATE TABLE auditoria_acciones (
     id_auditoria        NUMBER          GENERATED ALWAYS AS IDENTITY
                                         (START WITH 1 INCREMENT BY 1)
@@ -260,9 +260,9 @@ TABLESPACE tbs_citas_medicas;
 
 COMMENT ON TABLE auditoria_acciones IS 'Registro de auditoría de acciones por rol de usuario';
 
--- ============================================================
+
 -- CREAR ÍNDICES PARA MEJORAR RENDIMIENTO
--- ============================================================
+
 CREATE INDEX idx_mun_depto ON municipios(id_departamento);
 CREATE INDEX idx_sed_mun ON sedes(id_municipio);
 CREATE INDEX idx_con_sede ON consultorios(id_sede);
@@ -272,9 +272,9 @@ CREATE INDEX idx_cit_fecha ON citas_medicas(fecha_cita);
 CREATE INDEX idx_cit_estado ON citas_medicas(estado);
 CREATE INDEX idx_aud_tabla ON auditoria_acciones(tabla_afectada, fecha_accion);
 
--- ============================================================
+
 -- VERIFICAR TABLAS CREADAS
--- ============================================================
+
 SELECT table_name, num_rows, tablespace_name
 FROM user_tables
 ORDER BY table_name;
