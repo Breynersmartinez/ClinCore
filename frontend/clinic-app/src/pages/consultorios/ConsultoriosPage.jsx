@@ -10,7 +10,7 @@ import ConsultorioForm from './ConsultorioForm'
 
 export default function ConsultoriosPage() {
   const { addToast } = useAlert()
-  const { canAccess } = useAuth()
+  const { canAccess, hasPermiso } = useAuth()
   const [consultorios, setConsultorios] = useState([])
   const [sedes, setSedes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -21,16 +21,17 @@ export default function ConsultoriosPage() {
   const canCreate = canAccess({ roles: ADMIN_ROLES, permisos: ['CONSULTORIOS_CREATE'] })
   const canUpdate = canAccess({ roles: ADMIN_ROLES, permisos: ['CONSULTORIOS_UPDATE'] })
   const canDelete = canAccess({ roles: ADMIN_ROLES, permisos: ['CONSULTORIOS_DELETE'] })
+  const canReadSedes = hasPermiso('SEDES_READ')
 
   const fetchData = async () => {
     setLoading(true)
     try {
       const [consRes, sedesRes] = await Promise.all([
         axiosInstance.get('/consultorios'),
-        axiosInstance.get('/sedes'),
+        canReadSedes ? axiosInstance.get('/sedes') : Promise.resolve(null),
       ])
       setConsultorios(consRes.data?.data || [])
-      setSedes(sedesRes.data?.data || [])
+      setSedes(sedesRes?.data?.data || [])
     } catch {
       addToast('Error al cargar consultorios', 'error')
     } finally {
@@ -38,7 +39,7 @@ export default function ConsultoriosPage() {
     }
   }
 
-  useEffect(() => { fetchData() }, [])
+  useEffect(() => { fetchData() }, [canReadSedes])
 
   const filtered = useMemo(() => {
     if (!sedeFilter) return consultorios
@@ -129,6 +130,7 @@ export default function ConsultoriosPage() {
       </div>
 
       {/* Filters */}
+      {canReadSedes && (
       <div className="mb-4">
         <select
           value={sedeFilter}
@@ -141,6 +143,7 @@ export default function ConsultoriosPage() {
           ))}
         </select>
       </div>
+      )}
 
       <Table columns={columns} data={filtered} loading={loading} emptyMessage="No hay consultorios registrados" />
 
