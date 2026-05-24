@@ -1,0 +1,66 @@
+package com.example.citas_medicas_api;
+
+import com.example.citas_medicas_api.role.model.Rol;
+import com.example.citas_medicas_api.role.repository.RolRepository;
+import com.example.citas_medicas_api.user.model.Usuario;
+import com.example.citas_medicas_api.user.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDate;
+import java.util.Set;
+
+@SpringBootApplication
+@RequiredArgsConstructor
+public class CitasMedicasApiApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(CitasMedicasApiApplication.class, args);
+    }
+
+    @Bean
+    CommandLineRunner initAdmin(
+            UsuarioRepository uRepo,
+            RolRepository rRepo,
+            PasswordEncoder enc
+    ) {
+        return args -> {
+
+            // Crear rol ADMINISTRATIVO si no existe
+            Rol adminRol = rRepo.findByNombreRol("ADMINISTRATIVO")
+                    .orElseGet(() -> {
+                        Rol nuevoRol = Rol.builder()
+                                .nombreRol("ADMINISTRATIVO")
+                                .descripcion("Administrador del sistema")
+                                .activo("S")
+                                .build();
+
+                        return rRepo.save(nuevoRol);
+                    });
+
+            // Validar si usuario admin ya existe
+            if (uRepo.existsByUsername("admin")) {
+                System.out.println(">> Usuario admin ya existe");
+                return;
+            }
+
+            // Crear usuario admin
+            Usuario admin = Usuario.builder()
+                    .username("admin")
+                    .passwordHash(enc.encode("Admin2024#"))
+                    .email("admin@clinica.com")
+                    .activo("S")
+                    .fechaCreacion(LocalDate.now())
+                    .roles(Set.of(adminRol))
+                    .build();
+
+            uRepo.save(admin);
+
+            System.out.println(">> Usuario admin creado correctamente");
+        };
+    }
+}
