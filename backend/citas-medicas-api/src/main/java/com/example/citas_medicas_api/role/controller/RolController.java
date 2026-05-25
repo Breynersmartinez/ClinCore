@@ -20,27 +20,29 @@ import java.util.Set;
 @RestController
 @RequestMapping("/roles")
 @RequiredArgsConstructor
-@Tag(name = "Roles y Permisos", description = "Gestión de roles y asignación de permisos — solo ADMINISTRATIVO")
+@Tag(name = "Roles y Permisos", description = "Gestión de roles y asignación de permisos")
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasRole('ADMINISTRATIVO')")
 public class RolController {
 
     private final RolService rolService;
 
     @Operation(summary = "Listar todos los roles con sus permisos")
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLES_READ')")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> listar() {
         return ResponseEntity.ok(ApiResponse.ok(rolService.listarTodos()));
     }
 
     @Operation(summary = "Buscar rol por ID")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLES_READ')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(rolService.buscarPorId(id)));
     }
 
     @Operation(summary = "Crear nuevo rol con permisos")
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLES_CREATE')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> crear(
             @Valid @RequestBody RolRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,6 +51,7 @@ public class RolController {
 
     @Operation(summary = "Actualizar descripción y permisos del rol")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLES_UPDATE')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> actualizar(
             @PathVariable Long id,
             @Valid @RequestBody RolRequest request) {
@@ -59,6 +62,7 @@ public class RolController {
     @Operation(summary = "Asignar/reemplazar permisos a un rol",
             description = "Enviar el conjunto completo de IDs de permisos que debe tener el rol.")
     @PutMapping("/{id}/permisos")
+    @PreAuthorize("hasAuthority('ROLES_UPDATE')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> asignarPermisos(
             @PathVariable Long id,
             @RequestBody Set<Long> permisoIds) {
@@ -69,6 +73,7 @@ public class RolController {
 
     @Operation(summary = "Inactivar rol")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLES_DELETE')")
     public ResponseEntity<ApiResponse<Void>> inactivar(@PathVariable Long id) {
         rolService.inactivar(id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Rol inactivado"));

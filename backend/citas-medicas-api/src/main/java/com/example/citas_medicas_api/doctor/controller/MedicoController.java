@@ -27,28 +27,28 @@ public class MedicoController {
 
     @Operation(summary = "Listar todos los médicos")
     @GetMapping
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('MEDICOS_READ')")
     public ResponseEntity<ApiResponse<List<MedicoResponse>>> listarTodos() {
         return ResponseEntity.ok(ApiResponse.ok(medicoService.listarTodos()));
     }
 
     @Operation(summary = "Listar médicos activos")
     @GetMapping("/activos")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('MEDICOS_READ')")
     public ResponseEntity<ApiResponse<List<MedicoResponse>>> listarActivos() {
         return ResponseEntity.ok(ApiResponse.ok(medicoService.listarActivos()));
     }
 
     @Operation(summary = "Buscar médico por ID")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('MEDICOS_READ')")
     public ResponseEntity<ApiResponse<MedicoResponse>> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(medicoService.buscarPorId(id)));
     }
 
     @Operation(summary = "Buscar médico por persona")
     @GetMapping("/persona/{idPersona}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('MEDICOS_READ')")
     public ResponseEntity<ApiResponse<MedicoResponse>> buscarPorPersona(
             @PathVariable Long idPersona) {
         return ResponseEntity.ok(ApiResponse.ok(medicoService.buscarPorPersona(idPersona)));
@@ -56,7 +56,7 @@ public class MedicoController {
 
     @Operation(summary = "Listar médicos por especialidad")
     @GetMapping("/especialidad/{idEspecialidad}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('MEDICOS_READ')")
     public ResponseEntity<ApiResponse<List<MedicoResponse>>> listarPorEspecialidad(
             @PathVariable Long idEspecialidad) {
         return ResponseEntity.ok(ApiResponse.ok(
@@ -65,7 +65,7 @@ public class MedicoController {
 
     @Operation(summary = "Listar médicos activos por especialidad")
     @GetMapping("/especialidad/{idEspecialidad}/activos")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('MEDICOS_READ')")
     public ResponseEntity<ApiResponse<List<MedicoResponse>>> listarActivosPorEspecialidad(
             @PathVariable Long idEspecialidad) {
         return ResponseEntity.ok(ApiResponse.ok(
@@ -74,7 +74,7 @@ public class MedicoController {
 
     @Operation(summary = "Crear médico")
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('MEDICOS_CREATE')")
     public ResponseEntity<ApiResponse<MedicoResponse>> crear(
             @Valid @RequestBody MedicoRequest request) {
         MedicoResponse created = medicoService.crear(request);
@@ -84,7 +84,7 @@ public class MedicoController {
 
     @Operation(summary = "Actualizar médico")
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('MEDICOS_UPDATE')")
     public ResponseEntity<ApiResponse<MedicoResponse>> actualizar(
             @PathVariable Long id,
             @Valid @RequestBody MedicoRequest request) {
@@ -95,7 +95,7 @@ public class MedicoController {
 
     @Operation(summary = "Inactivar médico")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('MEDICOS_DELETE')")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Long id) {
         medicoService.eliminar(id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Médico inactivado exitosamente"));

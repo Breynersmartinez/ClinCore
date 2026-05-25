@@ -27,28 +27,28 @@ public class PacienteController {
 
     @Operation(summary = "Listar todos los pacientes")
     @GetMapping
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('PACIENTES_READ')")
     public ResponseEntity<ApiResponse<List<PacienteResponse>>> listarTodos() {
         return ResponseEntity.ok(ApiResponse.ok(pacienteService.listarTodos()));
     }
 
     @Operation(summary = "Listar pacientes activos")
     @GetMapping("/activos")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('PACIENTES_READ')")
     public ResponseEntity<ApiResponse<List<PacienteResponse>>> listarActivos() {
         return ResponseEntity.ok(ApiResponse.ok(pacienteService.listarActivos()));
     }
 
     @Operation(summary = "Buscar paciente por ID")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('PACIENTES_READ')")
     public ResponseEntity<ApiResponse<PacienteResponse>> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(pacienteService.buscarPorId(id)));
     }
 
     @Operation(summary = "Buscar paciente por persona")
     @GetMapping("/persona/{idPersona}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('PACIENTES_READ')")
     public ResponseEntity<ApiResponse<PacienteResponse>> buscarPorPersona(
             @PathVariable Long idPersona) {
         return ResponseEntity.ok(ApiResponse.ok(pacienteService.buscarPorPersona(idPersona)));
@@ -56,7 +56,7 @@ public class PacienteController {
 
     @Operation(summary = "Crear paciente")
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('PACIENTES_CREATE')")
     public ResponseEntity<ApiResponse<PacienteResponse>> crear(
             @Valid @RequestBody PacienteRequest request) {
         PacienteResponse created = pacienteService.crear(request);
@@ -66,7 +66,7 @@ public class PacienteController {
 
     @Operation(summary = "Actualizar paciente")
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('PACIENTES_UPDATE')")
     public ResponseEntity<ApiResponse<PacienteResponse>> actualizar(
             @PathVariable Long id,
             @Valid @RequestBody PacienteRequest request) {
@@ -77,7 +77,7 @@ public class PacienteController {
 
     @Operation(summary = "Inactivar paciente")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('PACIENTES_DELETE')")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Long id) {
         pacienteService.eliminar(id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Paciente inactivado exitosamente"));

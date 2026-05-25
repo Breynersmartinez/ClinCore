@@ -16,7 +16,7 @@ import UsuarioForm from './UsuarioForm'
 
 export default function UsuariosPage() {
   const { addToast } = useAlert()
-  const { canAccess } = useAuth()
+  const { canAccess, hasPermiso } = useAuth()
   const [usuarios, setUsuarios] = useState([])
   const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
@@ -29,13 +29,17 @@ export default function UsuariosPage() {
   const canCreate = canAccess({ roles: ADMIN_ROLES, permisos: ['USUARIOS_CREATE'] })
   const canUpdate = canAccess({ roles: ADMIN_ROLES, permisos: ['USUARIOS_UPDATE'] })
   const canDelete = canAccess({ roles: ADMIN_ROLES, permisos: ['USUARIOS_DELETE'] })
+  const canReadRoles = hasPermiso('ROLES_READ')
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [usuRes, rolRes] = await Promise.all([getUsuarios(), getRoles()])
+      const [usuRes, rolRes] = await Promise.all([
+        getUsuarios(),
+        canReadRoles ? getRoles() : Promise.resolve(null),
+      ])
       setUsuarios(usuRes.data?.data || [])
-      setRoles(rolRes.data?.data || [])
+      setRoles(rolRes?.data?.data || [])
     } catch {
       addToast('Error al cargar usuarios', 'error')
     } finally {
@@ -45,7 +49,7 @@ export default function UsuariosPage() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [canReadRoles])
 
   const filtered = useMemo(() => {
     if (!search) return usuarios
@@ -131,7 +135,7 @@ export default function UsuariosPage() {
       title: 'Acciones',
       render: (_, row) => (
         <div className="flex gap-1.5">
-          {canUpdate && (
+          {canUpdate && canReadRoles && (
             <button
               onClick={() => openRoleModal(row)}
               className="px-2.5 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"

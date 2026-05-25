@@ -94,7 +94,11 @@ export function AuthProvider({ children }) {
   )
 
   const canAccess = useCallback(
-    ({ roles = [], permisos = [] } = {}) => hasAnyRole(roles) && hasAnyPermiso(permisos),
+    ({ roles = [], permisos = [] } = {}) => {
+      if (permisos.length > 0) return hasAnyPermiso(permisos)
+      if (roles.length > 0) return hasAnyRole(roles)
+      return true
+    },
     [hasAnyRole, hasAnyPermiso]
   )
 

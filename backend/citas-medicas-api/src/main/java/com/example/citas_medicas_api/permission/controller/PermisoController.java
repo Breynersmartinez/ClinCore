@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Permisos", description = "Consulta de permisos de aplicación")
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasRole('ADMINISTRATIVO')")
 public class PermisoController {
 
     private final PermisoService permisoService;
@@ -26,6 +25,7 @@ public class PermisoController {
     @Operation(summary = "Listar permisos",
             description = "Permite listar todos los permisos o filtrarlos por módulo usando ?modulo=CONSULTORIOS")
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLES_READ') or hasAuthority('USUARIOS_READ')")
     public ResponseEntity<ApiResponse<List<PermisoResponseDTO>>> listar(
             @RequestParam(required = false) String modulo) {
         return ResponseEntity.ok(ApiResponse.ok(permisoService.listar(modulo)));

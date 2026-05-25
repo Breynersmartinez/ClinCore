@@ -20,27 +20,29 @@ import java.util.Set;
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
-@Tag(name = "Usuarios", description = "Gestión de usuarios del sistema — solo ADMINISTRATIVO")
+@Tag(name = "Usuarios", description = "Gestión de usuarios del sistema por permisos")
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasRole('ADMINISTRATIVO')")  // Aplica a todo el controller
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
     @Operation(summary = "Listar todos los usuarios")
     @GetMapping
+    @PreAuthorize("hasAuthority('USUARIOS_READ')")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> listar() {
         return ResponseEntity.ok(ApiResponse.ok(usuarioService.listarTodos()));
     }
 
     @Operation(summary = "Buscar usuario por ID")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('USUARIOS_READ')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(usuarioService.buscarPorId(id)));
     }
 
     @Operation(summary = "Crear usuario con roles")
     @PostMapping
+    @PreAuthorize("hasAuthority('USUARIOS_CREATE')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> crear(
             @Valid @RequestBody UsuarioRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,6 +51,7 @@ public class UsuarioController {
 
     @Operation(summary = "Asignar/reemplazar roles a un usuario")
     @PutMapping("/{id}/roles")
+    @PreAuthorize("hasAuthority('USUARIOS_UPDATE')")
     public ResponseEntity<ApiResponse<Map<String, Object>>> asignarRoles(
             @PathVariable Long id,
             @RequestBody Set<Long> roleIds) {
@@ -59,6 +62,7 @@ public class UsuarioController {
 
     @Operation(summary = "Cambiar contraseña de usuario")
     @PatchMapping("/{id}/password")
+    @PreAuthorize("hasAuthority('USUARIOS_UPDATE')")
     public ResponseEntity<ApiResponse<Void>> cambiarPassword(
             @PathVariable Long id,
             @RequestParam String nuevaPassword) {
@@ -68,6 +72,7 @@ public class UsuarioController {
 
     @Operation(summary = "Inactivar usuario")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('USUARIOS_DELETE')")
     public ResponseEntity<ApiResponse<Void>> inactivar(@PathVariable Long id) {
         usuarioService.inactivar(id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Usuario inactivado"));
@@ -75,6 +80,7 @@ public class UsuarioController {
 
     @Operation(summary = "Activar usuario")
     @PatchMapping("/{id}/activar")
+    @PreAuthorize("hasAuthority('USUARIOS_UPDATE')")
     public ResponseEntity<ApiResponse<Void>> activar(@PathVariable Long id) {
         usuarioService.activar(id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Usuario activado"));

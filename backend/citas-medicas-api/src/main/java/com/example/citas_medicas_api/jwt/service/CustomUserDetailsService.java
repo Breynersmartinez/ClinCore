@@ -48,10 +48,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         for (Rol rol : usuario.getRoles()) {
-            // Agrega el rol como authority: ROLE_MEDICO
+            if (!"S".equals(rol.getActivo())) {
+                continue;
+            }
+
             authorities.add(new SimpleGrantedAuthority("ROLE_" + rol.getNombreRol()));
 
-            // Agrega permisos del rol como authorities: CONSULTORIOS_READ
             for (Permiso permiso : rol.getPermisos()) {
                 if ("S".equals(permiso.getActivo())) {
                     authorities.add(new SimpleGrantedAuthority(permiso.getNombrePermiso()));

@@ -7,7 +7,7 @@ const NAV_ITEMS = [
     path: '/dashboard',
     label: 'Dashboard',
     requiredPermiso: null,
-    requiredRoles: ['ADMINISTRATIVO', 'AUXILIAR_MEDICO'],
+    requiredRoles: [],
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}

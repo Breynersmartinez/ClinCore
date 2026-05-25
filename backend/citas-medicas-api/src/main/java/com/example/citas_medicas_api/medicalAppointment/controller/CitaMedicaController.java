@@ -19,11 +19,11 @@ import java.util.List;
 /**
  * CRUD de Citas Médicas.
  *
- * Acceso por rol:
- *  GET         → todos los roles autenticados
- *  POST        → ADMINISTRATIVO, AUXILIAR_MEDICO
- *  PUT         → MEDICO (estado), ADMINISTRATIVO, AUXILIAR_MEDICO
- *  DELETE      → solo ADMINISTRATIVO
+ * Acceso por permisos:
+ *  GET         → CITAS_READ
+ *  POST        → CITAS_CREATE
+ *  PUT/PATCH   → CITAS_UPDATE
+ *  DELETE      → CITAS_DELETE
  */
 @RestController
 @RequestMapping("/citas")
@@ -36,21 +36,21 @@ public class CitaMedicaController {
 
     @Operation(summary = "Listar todas las citas")
     @GetMapping
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('CITAS_READ')")
     public ResponseEntity<ApiResponse<List<CitaMedicaResponse>>> listarTodas() {
         return ResponseEntity.ok(ApiResponse.ok(citaService.listarTodas()));
     }
 
     @Operation(summary = "Buscar cita por ID")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('CITAS_READ')")
     public ResponseEntity<ApiResponse<CitaMedicaResponse>> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(citaService.buscarPorId(id)));
     }
 
     @Operation(summary = "Listar citas de un paciente")
     @GetMapping("/paciente/{idPaciente}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('CITAS_READ')")
     public ResponseEntity<ApiResponse<List<CitaMedicaResponse>>> porPaciente(
             @PathVariable Long idPaciente) {
         return ResponseEntity.ok(ApiResponse.ok(citaService.listarPorPaciente(idPaciente)));
@@ -58,16 +58,16 @@ public class CitaMedicaController {
 
     @Operation(summary = "Listar citas de un médico")
     @GetMapping("/medico/{idMedico}")
-    @PreAuthorize("hasAnyRole('MEDICO','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('CITAS_READ')")
     public ResponseEntity<ApiResponse<List<CitaMedicaResponse>>> porMedico(
             @PathVariable Long idMedico) {
         return ResponseEntity.ok(ApiResponse.ok(citaService.listarPorMedico(idMedico)));
     }
 
     @Operation(summary = "Agendar nueva cita",
-            description = "⚠ ADMINISTRATIVO y AUXILIAR_MEDICO. Valida solapamiento de horarios.")
+            description = "Requiere CITAS_CREATE. Valida solapamiento de horarios.")
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('CITAS_CREATE')")
     public ResponseEntity<ApiResponse<CitaMedicaResponse>> crear(
             @Valid @RequestBody CitaMedicaRequest request) {
         CitaMedicaResponse cita = citaService.crear(request);
@@ -76,9 +76,9 @@ public class CitaMedicaController {
     }
 
     @Operation(summary = "Modificar cita",
-            description = "⚠ ADMINISTRATIVO y AUXILIAR_MEDICO. Solo citas PROGRAMADA/CONFIRMADA.")
+            description = "Requiere CITAS_UPDATE. Solo citas PROGRAMADA/CONFIRMADA.")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('CITAS_UPDATE')")
     public ResponseEntity<ApiResponse<CitaMedicaResponse>> actualizar(
             @PathVariable Long id,
             @Valid @RequestBody CitaMedicaRequest request) {
@@ -87,10 +87,10 @@ public class CitaMedicaController {
     }
 
     @Operation(summary = "Actualizar estado de una cita",
-            description = "MEDICO puede confirmar/atender. ADMINISTRATIVO puede cancelar. " +
+            description = "Requiere CITAS_UPDATE. " +
                     "Estados: PROGRAMADA → CONFIRMADA → ATENDIDA / CANCELADA / NO_ASISTIO")
     @PatchMapping("/{id}/estado")
-    @PreAuthorize("hasAnyRole('MEDICO','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('CITAS_UPDATE')")
     public ResponseEntity<ApiResponse<CitaMedicaResponse>> actualizarEstado(
             @PathVariable Long id,
             @RequestParam String estado,
@@ -101,9 +101,9 @@ public class CitaMedicaController {
     }
 
     @Operation(summary = "Cancelar cita",
-            description = "⚠ Solo ADMINISTRATIVO. Cancela la cita con un motivo.")
+            description = "Requiere CITAS_DELETE. Cancela la cita con un motivo.")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('CITAS_DELETE')")
     public ResponseEntity<ApiResponse<Void>> cancelar(
             @PathVariable Long id,
             @RequestParam String motivo) {

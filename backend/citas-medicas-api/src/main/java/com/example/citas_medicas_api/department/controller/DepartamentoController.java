@@ -26,19 +26,19 @@ public class DepartamentoController {
     private final DepartamentoService service;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('DEPARTAMENTOS_READ')")
     public ResponseEntity<ApiResponse<List<Departamento>>> listar() {
         return ResponseEntity.ok(ApiResponse.ok(service.listarActivos()));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('DEPARTAMENTOS_READ')")
     public ResponseEntity<ApiResponse<Departamento>> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(service.buscarPorId(id)));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('DEPARTAMENTOS_CREATE')")
     public ResponseEntity<ApiResponse<Departamento>> crear(
             @Valid @RequestBody DepartamentoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -46,7 +46,7 @@ public class DepartamentoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('DEPARTAMENTOS_UPDATE')")
     public ResponseEntity<ApiResponse<Departamento>> actualizar(
             @PathVariable Long id,
             @Valid @RequestBody DepartamentoRequest request) {
@@ -54,7 +54,7 @@ public class DepartamentoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('DEPARTAMENTOS_DELETE')")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Long id) {
         service.eliminar(id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Departamento inactivado"));

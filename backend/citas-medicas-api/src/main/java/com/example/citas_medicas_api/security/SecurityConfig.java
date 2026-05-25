@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -52,69 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
 
-                        // ── CATÁLOGOS ──────────────────────────────────────────
-                        // Todos los roles autenticados pueden leer catálogos
-                        .requestMatchers(HttpMethod.GET, "/departamentos/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.GET, "/municipios/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.GET, "/especialidades/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        // Solo ADMINISTRATIVO puede modificar catálogos
-                        .requestMatchers("/departamentos/**").hasRole("ADMINISTRATIVO")
-                        .requestMatchers("/municipios/**").hasRole("ADMINISTRATIVO")
-                        .requestMatchers("/especialidades/**").hasRole("ADMINISTRATIVO")
-
-                        // ── SEDES ──────────────────────────────────────────────
-                        .requestMatchers(HttpMethod.GET, "/sedes/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers("/sedes/**").hasRole("ADMINISTRATIVO")
-
-                        // ── CONSULTORIOS ───────────────────────────────────────
-                        // Lectura: todos los roles
-                        .requestMatchers(HttpMethod.GET, "/consultorios/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        // Escritura: solo ADMINISTRATIVO (CREATE, UPDATE, DELETE)
-                        .requestMatchers(HttpMethod.POST, "/consultorios/**").hasRole("ADMINISTRATIVO")
-                        .requestMatchers(HttpMethod.PUT, "/consultorios/**").hasRole("ADMINISTRATIVO")
-                        .requestMatchers(HttpMethod.DELETE, "/consultorios/**").hasRole("ADMINISTRATIVO")
-
-                        // ── PERSONAS / MÉDICOS / PACIENTES ─────────────────────
-                        .requestMatchers(HttpMethod.GET, "/personas/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.POST, "/personas/**").hasAnyRole(
-                                "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.PUT, "/personas/**").hasRole("ADMINISTRATIVO")
-                        .requestMatchers(HttpMethod.DELETE, "/personas/**").hasRole("ADMINISTRATIVO")
-
-                        .requestMatchers(HttpMethod.GET, "/medicos/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers("/medicos/**").hasRole("ADMINISTRATIVO")
-
-                        .requestMatchers(HttpMethod.GET, "/pacientes/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.POST, "/pacientes/**").hasAnyRole(
-                                "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.PUT, "/pacientes/**").hasRole("ADMINISTRATIVO")
-                        .requestMatchers(HttpMethod.DELETE, "/pacientes/**").hasRole("ADMINISTRATIVO")
-
-                        // ── CITAS MÉDICAS ──────────────────────────────────────
-                        .requestMatchers(HttpMethod.GET, "/citas/**").hasAnyRole(
-                                "MEDICO", "PACIENTE", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.POST, "/citas/**").hasAnyRole(
-                                "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.PUT, "/citas/**").hasAnyRole(
-                                "MEDICO", "ADMINISTRATIVO", "AUXILIAR_MEDICO")
-                        .requestMatchers(HttpMethod.DELETE, "/citas/**").hasRole("ADMINISTRATIVO")
-
-                        // ── GESTIÓN DE USUARIOS Y ROLES ────────────────────────
-                        .requestMatchers("/usuarios/**").hasRole("ADMINISTRATIVO")
-                        .requestMatchers("/roles/**").hasRole("ADMINISTRATIVO")
-                        .requestMatchers("/permisos/**").hasRole("ADMINISTRATIVO")
-
-                        // ── AUDITORÍA ──────────────────────────────────────────
-                        .requestMatchers("/auditoria/**").hasRole("ADMINISTRATIVO")
-
+                        // La autorización CRUD se define con @PreAuthorize en cada controlador,
+                        // usando permisos como MEDICOS_READ, CITAS_CREATE, USUARIOS_UPDATE, etc.
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -127,7 +65,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(allowedOrigins.split("http://localhost:5173/, http://localhost:5173")));
+        config.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank())
+                .toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setAllowCredentials(true);
@@ -156,4 +97,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-

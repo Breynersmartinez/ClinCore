@@ -25,33 +25,33 @@ public class SedeController {
     private final SedeService service;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('SEDES_READ')")
     public ResponseEntity<ApiResponse<List<SedeResponse>>> listar() {
         return ResponseEntity.ok(ApiResponse.ok(service.listarActivas()));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MEDICO','PACIENTE','ADMINISTRATIVO','AUXILIAR_MEDICO')")
+    @PreAuthorize("hasAuthority('SEDES_READ')")
     public ResponseEntity<ApiResponse<SedeResponse>> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(service.buscarPorId(id)));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('SEDES_CREATE')")
     public ResponseEntity<ApiResponse<SedeResponse>> crear(@Valid @RequestBody SedeRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.ok(service.crear(request), "Sede creada"));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('SEDES_UPDATE')")
     public ResponseEntity<ApiResponse<SedeResponse>> actualizar(
             @PathVariable Long id, @Valid @RequestBody SedeRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(service.actualizar(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATIVO')")
+    @PreAuthorize("hasAuthority('SEDES_DELETE')")
     public ResponseEntity<ApiResponse<Void>> eliminar(@PathVariable Long id) {
         service.eliminar(id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Sede inactivada"));
