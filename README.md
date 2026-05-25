@@ -4,6 +4,7 @@ Sistema integral para la gestion de citas medicas. El proyecto esta compuesto po
 
 ## Tabla de Contenido
 
+
 - [Descripcion General](#descripcion-general)
 - [Arquitectura](#arquitectura)
 - [Componentes del Proyecto](#componentes-del-proyecto)
@@ -21,6 +22,7 @@ Sistema integral para la gestion de citas medicas. El proyecto esta compuesto po
 - [Notas de Operacion](#notas-de-operacion)
 
 ## Descripcion General
+
 
 Medical Management es una solucion para administrar procesos basicos de una institucion medica:
 
